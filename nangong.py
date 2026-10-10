@@ -31,7 +31,10 @@ intents.message_content = True  # Obligatorio para leer el contenido de los mens
 
 bot = commands.Bot(command_prefix="!", intents=intents)
 
-# Lista completa de frases aleatorias (las originales + las nuevas de Idol/Cavidades)
+# ID del canal de destino (ಣ𓈒ֵ۫🍭-♪-bots-♡₊˚)
+CANAL_DESTINO_ID = 1556010203944849538
+
+# Lista completa de frases aleatorias
 FRASES_TRABAJO = [
     '¿"Trabajo"? Prefiero llamarlo "mi próximo espectáculo de tiempo completo". Aunque si vas a ponerme a trabajar, asegúrate de que el presupuesto esté a la altura de mis pasos de baile.',
     '¿Ah, te refieres a lo que hago sobre el escenario o a limpiar monstruos en las Cavidades? Da igual, en ambos controlo el ritmo a la perfección. ¡Mantén los ojos abiertos si no quieres perderte el clímax!',
@@ -68,8 +71,13 @@ async def on_message(message):
 
     # El regex busca "trabajo", "chamba" o "curro" como palabras exactas e independientes
     if re.search(r'\b(trabajo|chamba|curro)\b', mensaje_limpio):
-        frase_aleatoria = random.choice(FRASES_TRABAJO)
-        await message.channel.send(frase_aleatoria)
+        # NUEVO: Buscamos el canal específico por su ID
+        canal_bots = bot.get_channel(CANAL_DESTINO_ID)
+        
+        if canal_bots:
+            frase_aleatoria = random.choice(FRASES_TRABAJO)
+            # NUEVO: Mencionamos al usuario para que sepa a quién le responde en el canal de bots
+            await canal_bots.send(f"{message.author.mention} {frase_aleatoria}")
 
     await bot.process_commands(message)
 
@@ -77,14 +85,11 @@ async def on_message(message):
 # 3. ARRANQUE DEL SISTEMA
 # ==========================================
 if __name__ == "__main__":
-    # 1. Arranca el servidor web Flask en segundo plano primero
     keep_alive()
     
-    # 2. Inicia el bot leyendo el Token desde el entorno seguro de Render
     TOKEN = os.getenv('DISCORD_TOKEN')
     if not TOKEN:
         print("ERROR: La variable DISCORD_TOKEN no está configurada en Render.")
     else:
         bot.run(TOKEN)
-
 
