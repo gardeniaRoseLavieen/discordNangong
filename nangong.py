@@ -66,8 +66,8 @@ async def on_message(message):
     # Normalizamos el mensaje (minúsculas y sin tildes)
     mensaje_limpio = normalizar_texto(message.content)
 
-    # El regex busca la palabra "trabajo" de forma exacta e inmune a puntuación
-    if re.search(r'\btrabajo\b', mensaje_limpio):
+    # El regex busca "trabajo", "chamba" o "curro" como palabras exactas e independientes
+    if re.search(r'\b(trabajo|chamba|curro)\b', mensaje_limpio):
         frase_aleatoria = random.choice(FRASES_TRABAJO)
         await message.channel.send(frase_aleatoria)
 
@@ -86,4 +86,5 @@ if __name__ == "__main__":
         print("ERROR: La variable DISCORD_TOKEN no está configurada en Render.")
     else:
         bot.run(TOKEN)
+
 
