@@ -3,35 +3,16 @@ import random
 import re  # Importamos Expresiones Regulares para limpiar el texto
 import discord
 from discord.ext import commands
-from flask import Flask
-from threading import Thread
 
 # ==========================================
-# 1. SERVIDOR WEB INTERNO (Mantiene el 24/7)
-# ==========================================
-app = Flask('')
-
-@app.route('/')
-def home():
-    return "¡Bot en línea 24/7!"
-
-def run():
-    port = int(os.environ.get("PORT", 8080))
-    app.run(host='0.0.0.0', port=port)
-
-def keep_alive():
-    t = Thread(target=run)
-    t.start()
-
-# ==========================================
-# 2. CONFIGURACIÓN DEL BOT DE DISCORD
+# 1. CONFIGURACIÓN DEL BOT DE DISCORD
 # ==========================================
 intents = discord.Intents.default()
 intents.message_content = True  # Obligatorio para leer el contenido de los mensajes
 
 bot = commands.Bot(command_prefix="!", intents=intents)
 
-# Lista completa de frases aleatorias (las originales + las nuevas de Idol/Cavidades)
+# Lista completa de frases aleatorias
 FRASES_TRABAJO = [
     '¿"Trabajo"? Prefiero llamarlo "mi próximo espectáculo de tiempo completo". Aunque si vas a ponerme a trabajar, asegúrate de que el presupuesto esté a la altura de mis pasos de baile.',
     '¿Ah, te refieres a lo que hago sobre el escenario o a limpiar monstruos en las Cavidades? Da igual, en ambos controlo el ritmo a la perfección. ¡Mantén los ojos abiertos si no quieres perderte el clímax!',
@@ -74,15 +55,12 @@ async def on_message(message):
     await bot.process_commands(message)
 
 # ==========================================
-# 3. ARRANQUE DEL SISTEMA
+# 2. ARRANQUE DEL SISTEMA
 # ==========================================
 if __name__ == "__main__":
-    # 1. Arranca el servidor web Flask en segundo plano primero
-    keep_alive()
-    
-    # 2. Inicia el bot leyendo el Token desde el entorno seguro de Render
     TOKEN = os.getenv('DISCORD_TOKEN')
     if not TOKEN:
-        print("ERROR: La variable DISCORD_TOKEN no está configurada en Render.")
+        print("ERROR: La variable DISCORD_TOKEN no está configurada.")
     else:
         bot.run(TOKEN)
+
